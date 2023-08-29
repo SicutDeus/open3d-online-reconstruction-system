@@ -1,0 +1,37 @@
+def make_scene_v2():
+    times = [0, 0, 0, 0]
+
+    from reconstruction_system.initialize_config import initialize_config, dataset_loader
+
+    config = dataset_loader('')
+    config['path_dataset'] = 'E:\\open3dData'
+    config['debug_mode'] = False
+
+    start_time = time.time()
+    from reconstruction_system import make_fragments
+    make_fragments.run(config)
+    times[0] = time.time() - start_time
+
+    start_time = time.time()
+    from reconstruction_system import register_fragments
+    register_fragments.run(config)
+    times[1] = time.time() - start_time
+
+    start_time = time.time()
+    from reconstruction_system import refine_registration
+    refine_registration.run(config)
+    times[2] = time.time() - start_time
+
+    start_time = time.time()
+    from reconstruction_system import integrate_scene
+    integrate_scene.run(config)
+    times[3] = time.time() - start_time
+
+    print("====================================")
+    print("Elapsed time (in h:m:s)")
+    print("====================================")
+    print("- Making fragments    %s" % datetime.timedelta(seconds=times[0]))
+    print("- Register fragments  %s" % datetime.timedelta(seconds=times[1]))
+    print("- Refine registration %s" % datetime.timedelta(seconds=times[2]))
+    print("- Integrate frames    %s" % datetime.timedelta(seconds=times[3]))
+    print("- Total               %s" % datetime.timedelta(seconds=sum(times)))
